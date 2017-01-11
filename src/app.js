@@ -1,10 +1,5 @@
 import Rx from 'rx';
 
-const ARROW_LENGTH = 100;
-const ARROW_SPEED = 50;
-const ARROW_MAX_ANGLE = 70;
-const ARROW_LEFT_KEYCODE = 37;
-const ARROW_RIGHT_KEYCODE = 39;
 const TICKER_INTERVAL = 17;
 const BUBBLE_SHOOT_KEYCODE = 32;
 const BUBBLE_COOLDOWN = 2000;
@@ -13,52 +8,20 @@ import Stage from './stage';
 
 const stage = new Stage('stage');
 
-const drawTitle = () => {
+const drawTitle = (ctx, canvas, props) => {
   ctx.textAlign = 'center';
   ctx.font = '24px Courier New';
   ctx.fillText('rxjs bust a move', canvas.width / 2, canvas.height / 2 - 24);
 };
 
-const drawArrow = (angle=0) => {
-  ctx.save();
 
-  // Arrow specific styling
-  ctx.translate(canvas.width/2, canvas.height);
-  ctx.rotate(angle * Math.PI / 180);
-  ctx.shadowColor = 'black';
-  ctx.shadowBlur = 1;
-  ctx.fillStyle = 'black';
-
-  // Main arrow line
-  ctx.beginPath();
-  ctx.moveTo(0, 0);
-  ctx.lineTo(0, -100);
-  ctx.lineWidth = 3;
-  ctx.stroke();
-
-  // Arrow tip
-  ctx.beginPath();
-  ctx.moveTo(0, -102);
-  ctx.lineTo(-5, -92);
-  ctx.lineTo(5, -92);
-  ctx.lineTo(0, -100);
-  ctx.lineWidth = 1;
-  ctx.stroke();
-  ctx.fill();
-
-  ctx.beginPath();
-  ctx.arc(0,0,6,-90*Math.PI,90*Math.PI);
-  ctx.stroke();
-  ctx.fill();
-
-  ctx.restore();
-};
 
 const clearStage = () => {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 };
 
-
+const ARROW_LEFT_KEYCODE = 37;
+const ARROW_RIGHT_KEYCODE = 39;
 
 const arrowKeysDown$ = Rx.Observable
   .fromEvent(document, 'keydown')
