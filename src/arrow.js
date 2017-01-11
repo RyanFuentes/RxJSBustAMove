@@ -1,8 +1,4 @@
-const ARROW_LENGTH = 100;
-const ARROW_SPEED = 50;
-const ARROW_MAX_ANGLE = 70;
-
-const arrow = (ctx, canvas, {angle}) => {
+export const drawArrow = (ctx, canvas, angle) => {
   ctx.save();
 
   // Arrow specific styling

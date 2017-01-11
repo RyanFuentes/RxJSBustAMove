@@ -1,27 +1,21 @@
 import Rx from 'rx';
+import {drawArrow} from './arrow';
 
 const TICKER_INTERVAL = 17;
 const BUBBLE_SHOOT_KEYCODE = 32;
 const BUBBLE_COOLDOWN = 2000;
+const ARROW_SPEED = 50;
+const ARROW_LENGTH = 100;
+const ARROW_MAX_ANGLE = 70;
+const ARROW_LEFT_KEYCODE = 37;
+const ARROW_RIGHT_KEYCODE = 39;
 
-import Stage from './stage';
-
-const stage = new Stage('stage');
-
-const drawTitle = (ctx, canvas, props) => {
-  ctx.textAlign = 'center';
-  ctx.font = '24px Courier New';
-  ctx.fillText('rxjs bust a move', canvas.width / 2, canvas.height / 2 - 24);
-};
-
-
+const canvas = document.getElementById('stage');
+const ctx = canvas.getContext('2d');
 
 const clearStage = () => {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 };
-
-const ARROW_LEFT_KEYCODE = 37;
-const ARROW_RIGHT_KEYCODE = 39;
 
 const arrowKeysDown$ = Rx.Observable
   .fromEvent(document, 'keydown')
@@ -79,15 +73,12 @@ const arrow$ = ticker$
   }, 0)
   .distinctUntilChanged();
 
-const update = ([ticker, arrow]) => {
-  clearStage();
-  drawArrow(arrow);
-}
-
 const game$ = Rx.Observable
   .combineLatest(ticker$, arrow$)
   .sample(TICKER_INTERVAL)
-  .subscribe(update);
+  .subscribe(([ticker, arrow]) => {
+    clearStage();
+    drawArrow(ctx, canvas, arrow);
+  });
 
-drawTitle();
-drawArrow();
+drawArrow(ctx, canvas, 0);
