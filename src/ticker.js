@@ -7,9 +7,7 @@ export const ticker$ = Rx.Observable
     time: Date.now(),
     deltaTime: null
   }))
-  .scan(
-    (previous, current) => ({
-      time: current.time,
-      deltaTime: (current.time - previous.time) / 1000
-    })
-  );
+  .scan((previous, current) => ({
+    time: current.time,
+    deltaTime: (current.time - previous.time) / 1000
+  }));

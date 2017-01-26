@@ -12,16 +12,14 @@ const arrowKeysUp$ = Rx.Observable
 
 const arrowMovement$ = Rx.Observable
   .merge(arrowKeysDown$, arrowKeysUp$)
-  .scan(
-    (previous, current) => {
-      if (current.type === 'keyup' &&
-          previous.type === 'keydown' &&
-          current.keyCode !== previous.keyCode) {
-            return previous;
-          }
-      return current;
-    }
-  )
+  .scan((previous, current) => {
+    if (current.type === 'keyup' &&
+        previous.type === 'keydown' &&
+        current.keyCode !== previous.keyCode) {
+          return previous;
+        }
+    return current;
+  })
   .map(e => {
     if (e.type === 'keyup') return 0;
     if (e.keyCode === c.ARROW_LEFT_KEYCODE) return -1;
@@ -31,13 +29,14 @@ const arrowMovement$ = Rx.Observable
 
 export const arrow$ = ticker$
   .withLatestFrom(arrowMovement$)
+  .startWith(0)
   .scan((position, [ticker, direction]) => {
     let nextPosition = position + direction * ticker.deltaTime * c.ARROW_SPEED;
 
     if (nextPosition > c.ARROW_MAX_ANGLE)       return c.ARROW_MAX_ANGLE;
     if (nextPosition < c.ARROW_MAX_ANGLE * -1)  return c.ARROW_MAX_ANGLE * -1;
     return nextPosition;
-  }, 0)
+  })
   .distinctUntilChanged();
 
 export const drawArrow = (ctx, canvas, angle) => {
