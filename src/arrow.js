@@ -29,12 +29,12 @@ const arrowMovement$ = Rx.Observable
 
 export const arrow$ = ticker$
   .withLatestFrom(arrowMovement$)
-  .startWith(0)
+  .startWith(90)
   .scan((position, [ticker, direction]) => {
     let nextPosition = position + direction * ticker.deltaTime * c.ARROW_SPEED;
 
     if (nextPosition > c.ARROW_MAX_ANGLE)       return c.ARROW_MAX_ANGLE;
-    if (nextPosition < c.ARROW_MAX_ANGLE * -1)  return c.ARROW_MAX_ANGLE * -1;
+    if (nextPosition < (180-c.ARROW_MAX_ANGLE))  return (180-c.ARROW_MAX_ANGLE);
     return nextPosition;
   })
   .distinctUntilChanged();
@@ -44,10 +44,11 @@ export const drawArrow = (ctx, canvas, angle) => {
 
   // Arrow specific styling
   ctx.translate(canvas.width/2, canvas.height);
-  ctx.rotate(angle * Math.PI / 180);
+  ctx.rotate(angle * Math.PI/180 - Math.PI/2);
   ctx.shadowColor = 'black';
   ctx.shadowBlur = 1;
   ctx.fillStyle = 'black';
+  ctx.strokeStyle = "black";
 
   // Main arrow line
   ctx.beginPath();
