@@ -23,5 +23,4 @@ const game$ = Rx.Observable
     drawAimer(ctx, canvas, arrow, canvas.width/2, canvas.height);
   });
 
-drawArrow(ctx, canvas, 90, canvas.width/2, canvas.height);
-drawAimer(ctx, canvas, 90, canvas.width/2, canvas.height);
+shooter$.subscribe(bubbles => console.log(JSON.stringify(bubbles.slice(-1)[0])));

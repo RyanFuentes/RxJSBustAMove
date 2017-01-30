@@ -4,32 +4,23 @@ import * as c from './constants';
 
 const arrowKeysDown$ = Rx.Observable
   .fromEvent(document, 'keydown')
-  .filter(e => e.keyCode === c.ARROW_LEFT_KEYCODE || e.keyCode === c.ARROW_RIGHT_KEYCODE);
+  .filter(e => e.keyCode === c.ARROW_LEFT_KEYCODE || e.keyCode === c.ARROW_RIGHT_KEYCODE)
+  .map(e => e.keyCode === c.ARROW_LEFT_KEYCODE ? {left: 1} : {right: 1});
 
 const arrowKeysUp$ = Rx.Observable
   .fromEvent(document, 'keyup')
-  .filter(e => e.keyCode === c.ARROW_LEFT_KEYCODE || e.keyCode === c.ARROW_RIGHT_KEYCODE);
+  .filter(e => e.keyCode === c.ARROW_LEFT_KEYCODE || e.keyCode === c.ARROW_RIGHT_KEYCODE)
+  .map(e => e.keyCode === c.ARROW_LEFT_KEYCODE ? {left: 0} : {right: 0});
 
 const arrowMovement$ = Rx.Observable
   .merge(arrowKeysDown$, arrowKeysUp$)
-  .scan((previous, current) => {
-    if (current.type === 'keyup' &&
-        previous.type === 'keydown' &&
-        current.keyCode !== previous.keyCode) {
-          return previous;
-        }
-    return current;
-  })
-  .map(e => {
-    if (e.type === 'keyup') return 0;
-    if (e.keyCode === c.ARROW_LEFT_KEYCODE) return -1;
-    if (e.keyCode === c.ARROW_RIGHT_KEYCODE) return 1;
-  })
+  .scan((previous, current) => ({...previous, ...current}), {left: 0, right: 0})
+  .map(a => a.right - a.left)
   .distinctUntilChanged();
 
 export const arrow$ = ticker$
   .withLatestFrom(arrowMovement$)
-  .startWith(90)
+  .startWith(c.ARROW_START_ANGLE)
   .scan((position, [ticker, direction]) => {
     let nextPosition = position + direction * ticker.deltaTime * c.ARROW_SPEED;
 
@@ -48,7 +39,7 @@ export const drawArrow = (ctx, canvas, angle) => {
   ctx.shadowColor = 'black';
   ctx.shadowBlur = 1;
   ctx.fillStyle = 'black';
-  ctx.strokeStyle = "black";
+  ctx.strokeStyle = 'black';
 
   // Main arrow line
   ctx.beginPath();
@@ -67,6 +58,7 @@ export const drawArrow = (ctx, canvas, angle) => {
   ctx.stroke();
   ctx.fill();
 
+  //Arrow bottom
   ctx.beginPath();
   ctx.arc(0,0,6,-90*Math.PI,90*Math.PI);
   ctx.stroke();

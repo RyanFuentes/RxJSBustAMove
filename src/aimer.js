@@ -13,8 +13,8 @@ const getRouteLines = (direction, startX, startY, boardLength, lines=[]) => {
     endY = startY - Math.tan(direction* Math.PI/180) * boardLength/2;
   }
 
-  newLines = lines.concat({x1: startX, x2: endX, y1: startY, y2: endY});
-  if (newLines.find(l => l.y1 <= 0 || l.y2 <= 0)) {
+  newLines = lines.concat({startX, startY, endX, endY});
+  if (endY <= 0) {
     return newLines;
   } else {
     return getRouteLines(180 - direction, endX, endY, boardLength, newLines);
@@ -27,12 +27,12 @@ export const drawAimer = (ctx, canvas, direction, startX, startY) => {
   ctx.save();
   ctx.setLineDash([1, 15]);
   ctx.lineWidth = 2;
-  ctx.strokeStyle = "black";
+  ctx.strokeStyle = 'black';
 
   lines.forEach(l => {
     ctx.beginPath();
-    ctx.moveTo(l.x1, l.y1);
-    ctx.lineTo(l.x2, l.y2);
+    ctx.moveTo(l.startX, l.startY);
+    ctx.lineTo(l.endX, l.endY);
     ctx.stroke();
   });
 
